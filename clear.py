@@ -10,5 +10,5 @@ for file in os.listdir():
         os.remove(file)
 
     if file.startswith("input-") and file.endswith(".txt"):
-        if int(file[6:-4]) > 10:
+        if int(file[6:8]) > 10:
             os.remove(file)

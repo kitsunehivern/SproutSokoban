@@ -14,10 +14,13 @@ from Algorithms import BFS, DFS, UCS, AStar
 
 
 class Visualizer:
+    FPS = 30
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 600
     MAZE_SIZE = 600
     MAZE_CELL = 20
+    VIDEO_WIDTH = 48
+    VIDEO_HEIGHT = 32
     NOTI_TIME = 3.0
 
     assets = {}
@@ -25,6 +28,7 @@ class Visualizer:
 
     mazeDatas = []
     fileToIndex = {}
+    videoFrames = []
 
     choosenMaze = None
     choosenAlgorithm = None
@@ -48,22 +52,30 @@ class Visualizer:
     visualizeClock = None
     visualizeSpeed = None
     notiClock = None
+    videoClock = None
+    videoIndex = None
 
     grassPosition = None
     hasWon = False
 
     def __init__(self):
-        self.loadMaze()
-        self.loadAssets()
-        self.loadSettings()
-
         pygame.init()
         pygame.font.init()
+        pygame.mixer.init()
+
+        self.loadMaze()
+        print("Maze loaded")
+        self.loadAssets()
+        print("Assets loaded")
+        self.loadSettings()
+        print("Settings loaded")
+        self.loadFrame()
+        print("Frame loaded")
+
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         pygame.display.set_caption("Sprout Sokoban")
         pygame.display.set_icon(self.assets["icon"].subsurface((2, 2, 28, 28)))
         self.clock = pygame.time.Clock()
-        print(os.getcwd())
         self.manager = pygame_gui.UIManager(
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT),
             theme_path="Assets/CustomTheme.json",
@@ -74,6 +86,8 @@ class Visualizer:
         self.manager.preload_fonts(
             [{"name": "SproutLands", "point_size": 14, "style": "regular"}]
         )
+
+        pygame.mixer.music.set_volume(0.5)
 
         self.mazeText = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((10, 20), (180, 30)),
@@ -302,7 +316,7 @@ class Visualizer:
     def run(self):
         isFilenameWindowOpen = False
         while True:
-            deltaTime = self.clock.tick(60) / 1000.0
+            deltaTime = self.clock.tick(self.FPS) / 1000.0
             self.manager.update(deltaTime)
             if self.visualizeClock is not None:
                 self.visualizeClock += deltaTime
@@ -335,6 +349,12 @@ class Visualizer:
                     self.notiClock = None
                     self.notiBox.hide()
                     self.notiText.hide()
+
+            if self.videoClock is not None:
+                self.videoClock += deltaTime
+                while self.videoClock is not None and self.videoClock >= 1 / self.FPS:
+                    self.videoClock -= 1 / self.FPS
+                    self.visualizeVideo()
 
             self.screen.fill((232, 207, 166))
 
@@ -462,19 +482,25 @@ class Visualizer:
                                 )
                                 thread.start()
                         elif event.ui_object_id == "#file_name_window.#confirm_button":
-                            self.saveMaze(
-                                (
-                                    "-".join(
-                                        "".join(
-                                            c if c.isalnum() else " "
-                                            for c in fileNameEntry.get_text()
-                                        ).split()
-                                    )
-                                ).lower()
-                            )
-                            isFilenameWindowOpen = False
-                            fileNameWindow.hide()
-                            self.notify("Maze saved")
+                            fileName = (
+                                "-".join(
+                                    "".join(
+                                        c if c.isalnum() else " "
+                                        for c in fileNameEntry.get_text()
+                                    ).split()
+                                )
+                            ).lower()
+
+                            if fileName == "bad-apple":
+                                self.videoClock = 0.0
+                                self.videoIndex = 0
+                                isFilenameWindowOpen = False
+                                fileNameWindow.hide()
+                            else:
+                                self.saveMaze(fileName)
+                                isFilenameWindowOpen = False
+                                fileNameWindow.hide()
+                                self.notify("Maze saved")
                         elif (
                             event.ui_object_id == "#maze_size_slider.#left_button"
                             or event.ui_object_id == "#maze_size_slider.#right_button"
@@ -577,11 +603,53 @@ class Visualizer:
         self.notiText.set_text(text)
         self.notiClock = 0.0
 
+    def visualizeVideo(self):
+        if self.videoIndex == len(self.videoFrames):
+            self.videoClock = None
+            self.MAZE_CELL = 20
+            self.newMaze = [["#"] * self.MAZE_CELL for _ in range(self.MAZE_CELL)]
+            self.grassPosition = None
+            self.objectDropdownMenu.enable()
+            self.mazeSizeSlider.enable()
+            self.mazeSizeText.enable()
+            self.numStonesSlider.enable()
+            self.numStonesText.enable()
+            self.randomButton.enable()
+            self.clearButton.enable()
+            self.cancelButton.enable()
+            self.createButton.enable()
+            self.isGenerating = False
+            pygame.mixer.music.stop()
+            return
+
+        if self.videoIndex == 0:
+            self.MAZE_CELL = 50
+            self.grassPosition = None
+            self.objectDropdownMenu.disable()
+            self.mazeSizeSlider.disable()
+            self.mazeSizeText.disable()
+            self.numStonesSlider.disable()
+            self.numStonesText.disable()
+            self.randomButton.disable()
+            self.clearButton.disable()
+            self.cancelButton.disable()
+            self.createButton.disable()
+            self.isGenerating = True
+            pygame.mixer.music.play()
+
+        self.newMaze = [["#"] * self.VIDEO_WIDTH for _ in range(self.VIDEO_HEIGHT)]
+        for i in range(self.VIDEO_HEIGHT):
+            for j in range(self.VIDEO_WIDTH):
+                if self.videoFrames[self.videoIndex][i][j] == "0":
+                    self.newMaze[i][j] = " "
+
+        self.videoIndex += 1
+
     def visualizeAlgorithm(self):
         if (
             self.algorithmResult is None
             or self.algorithmResult[5] is None
-            or self.visualizeIndex >= len(self.algorithmResult[5])
+            or self.visualizeIndex == len(self.algorithmResult[5])
         ):
             self.visualizeClock = None
             self.mazeDropdownMenu.enable()
@@ -1516,6 +1584,7 @@ class Visualizer:
         self.assets["furniture"] = pygame.image.load("Assets/Objects/Furniture.png")
         self.assets["biom"] = pygame.image.load("Assets/Objects/Biom.png")
         self.assets["player"] = pygame.image.load("Assets/Characters/Charakter.png")
+        self.assets["audio"] = pygame.mixer.music.load("Assets/Audios/BadApple.mp3")
 
     def loadSettings(self):
         if os.path.exists("settings.json"):
@@ -1542,6 +1611,19 @@ class Visualizer:
             and self.choosenAlgorithm in ["Manual", "BFS", "DFS", "UCS", "A*"]
             else "Manual"
         )
+
+    def loadFrame(self):
+        with open("Assets/Videos/BadApple.txt", "r") as f:
+            countLines = 0
+            frame = []
+            for line in f.read().splitlines():
+                frame.append(line)
+                countLines += 1
+
+                if countLines == self.VIDEO_HEIGHT:
+                    self.videoFrames.append(frame)
+                    countLines = 0
+                    frame = []
 
     def saveSettings(self):
         with open("settings.json", "w") as f:
