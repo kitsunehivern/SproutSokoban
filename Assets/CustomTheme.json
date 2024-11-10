@@ -1,0 +1,163 @@
+{
+    "defaults": {
+        "colours": {
+            "normal_bg": "#E8CFA6",
+            "hovered_bg": "#DCB98A",
+            "disabled_bg": "#E8D6C0",
+            "disabled_dark_bg": "#E8D6C0",
+            "selected_bg": "#C49A6C",
+            "active_bg": "#C49A6C",
+            "dark_bg": "#E8CFA6",
+            "normal_text": "#AA7959",
+            "hovered_text": "#AA7959",
+            "selected_text": "#F3E5C2",
+            "disabled_text": "#C4A899",
+            "active_text": "#F3E5C2",
+            "text_shadow": "#FF0000",
+            "normal_border": "#AA7959",
+            "hovered_border": "#AA7959",
+            "disabled_border": "#C2A08B",
+            "selected_border": "#AA7959",
+            "active_border": "#AA7959",
+            "filled_bar": "#00FF00",
+            "unfilled_bar": "#00FF00"
+        }
+    },
+    "#drop_down_shape_prototype": {
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4"
+        }
+    },
+    "#drop_down_text_prototype": {
+        "font": {
+            "name": "SproutLands",
+            "size": "16",
+            "bold": "0",
+            "italic": "0",
+            "regular_resource": {
+                "package": "Assets.Fonts",
+                "resource": "SproutLands.ttf"
+            }
+        }
+    },
+    "drop_down_menu": {
+        "prototype": "#drop_down_shape_prototype",
+        "misc": {
+            "shadow_width": "0",
+            "border_width": "2",
+            "expand_direction": "down",
+            "open_button_width": "0"
+        }
+    },
+    "drop_down_menu.#drop_down_options_list": {
+        "prototype": "#drop_down_shape_prototype",
+        "misc": {
+            "shadow_width": "2",
+            "border_width": "1"
+        }
+    },
+    "drop_down_menu.#drop_down_options_list.vertical_scroll_bar": {
+        "misc": {
+            "shadow_width": "0",
+            "border_width": "1",
+            "enable_arrow_buttons": "0"
+        }
+    },
+    "drop_down_menu.#drop_down_options_list.button": {
+        "misc": {
+            "shadow_width": "0",
+            "border_width": "0"
+        }
+    },
+    "drop_down_menu.button": {
+        "misc": {
+            "shadow_width": "0",
+            "border_width": "0"
+        }
+    },
+    "label": {
+        "font": {
+            "name": "SproutLands",
+            "size": "16",
+            "bold": "0",
+            "italic": "0",
+            "regular_resource": {
+                "package": "Assets.Fonts",
+                "resource": "SproutLands.ttf"
+            }
+        }
+    },
+    "button": {
+        "font": {
+            "name": "SproutLands",
+            "size": "16",
+            "bold": "0",
+            "italic": "0",
+            "regular_resource": {
+                "package": "Assets.Fonts",
+                "resource": "SproutLands.ttf"
+            }
+        },
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "shadow_width": "0",
+            "border_width": "2"
+        }
+    },
+    "text_entry_line": {
+        "font": {
+            "name": "SproutLands",
+            "size": "16",
+            "bold": "0",
+            "italic": "0",
+            "regular_resource": {
+                "package": "Assets.Fonts",
+                "resource": "SproutLands.ttf"
+            }
+        },
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "shadow_width": "0",
+            "border_width": "2"
+        }
+    },
+    "horizontal_slider": {
+        "misc": {
+            "shape": "rounded_rectangle",
+            "sliding_button_width": "20",
+            "shadow_width": "0",
+            "border_width": "2",
+            "shape_corner_radius": "4",
+            "enable_arrow_buttons": "1"
+        }
+    },
+    "horizontal_slider.#sliding_button": {
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "2",
+            "shadow_width": "0",
+            "border_width": "1"
+        }
+    },
+    "text_box": {
+        "font": {
+            "name": "SproutLands",
+            "size": "16",
+            "bold": "0",
+            "italic": "0",
+            "regular_resource": {
+                "package": "Assets.Fonts",
+                "resource": "SproutLands.ttf"
+            }
+        },
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "shadow_width": "0",
+            "border_width": "2"
+        }
+    }
+}
